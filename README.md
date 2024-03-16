@@ -16,17 +16,19 @@
 
 # Изменения относительно репозитория AKEB #
 Убрано:
-* - mDNS
+  - mDNS
   - SSDP
   - спрятан датчик протечки воды
   - сохранение показаний каждый час
+
 Добавлено: 
-  - MQTT устройство для Home Assistant и его обнаружение
-  - преобразование литров в м3 для Home Assistant
+  * MQTT устройство для Home Assistant и его обнаружение
+  * преобразование литров в м3 для Home Assistant
+
 Изменения:
-  - исправлены небольшие ошибки в работе HTTP сервера
-  - SPIFFS заменен на LittleFS
-  - ArduinoJson v5 на ArduinoJson v7
+  * исправлены небольшие ошибки в работе HTTP сервера
+  * SPIFFS заменен на LittleFS
+  * ArduinoJson v5 на ArduinoJson v7
 
 ## Ссылки ##
 * [esptool-gui](https://github.com/Rodmg/esptool-gui)
