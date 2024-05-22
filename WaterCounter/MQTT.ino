@@ -142,17 +142,29 @@ void callbackForMQTT(char* topic, byte* payload, unsigned int length) {
            Mqtt_HA_Discovery();
   }
 
-	if (topic_String.equals("cold/state")) {
+  if (topic_String.equals("cold/state")) {                                          //Получаем значение топика счетчика холодной воды
 //    Serial.println(String((unsigned long)(payload_String.toFloat() * _Div1)));
-		if (ColdWaterCount != (unsigned long)(payload_String.toFloat() * _Div1) ) saveConfigNeed = true;
-		ColdWaterCount = (unsigned long)(payload_String.toFloat() * _Div1);
-	} else if (topic_String.equals("hot/state")) {
-		if (HotWaterCount != (unsigned long)(payload_String.toFloat() * _Div1) ) saveConfigNeed = true;
-		HotWaterCount = (unsigned long)(payload_String.toFloat() * _Div1);
-	} else if (topic_String.equals("alert/state")) {
-		if (Alert != payload_String.toInt()) saveConfigNeed = true;
-		Alert = payload_String.toInt();
-	}
+    if (local_cold_update_time != mqtt_cold_update_time & local_cold_update_time != 0 & ColdWaterCount != (unsigned long)(payload_String.toFloat() * _Div1)) {
+      saveConfigNeed = true;
+      MQTT_publish(_mqtt_topic + ESP_Name + "/cold/state", String(float(ColdWaterCount) / _Div1, 3));
+      MQTT_publish(_mqtt_topic + ESP_Name + "/cold/updated", String(local_cold_update_time));
+    }
+  } else if (topic_String.equals("cold/updated")) {                                 //Получаем значение топика времени обновления счетчика холодной воды
+    mqtt_cold_update_time = (time_t)(payload_String.toInt());
+    if (local_cold_update_time == 0 ) local_cold_update_time = mqtt_cold_update_time;    
+  } else if (topic_String.equals("hot/state")) {                                    //Получаем значение топика счетчика горячей воды
+    if (local_hot_update_time != mqtt_hot_update_time & local_hot_update_time != 0 & HotWaterCount != (unsigned long)(payload_String.toFloat() * _Div2)) {
+      saveConfigNeed = true;
+      MQTT_publish(_mqtt_topic + ESP_Name + "/hot/state", String(float(HotWaterCount) / _Div2, 3));
+      MQTT_publish(_mqtt_topic + ESP_Name + "/hot/updated", String(local_hot_update_time));
+    }
+  } else if (topic_String.equals("hot/updated")) {                                  //Получаем значение топика времени обновления счетчика горячей воды
+    mqtt_hot_update_time = (time_t)(payload_String.toInt());
+    if (local_hot_update_time == 0 ) local_hot_update_time = mqtt_hot_update_time;   
+  } else if (topic_String.equals("alert/state")) {
+    if (Alert != payload_String.toInt()) saveConfigNeed = true;
+    Alert = payload_String.toInt();
+  }
 
 	if (saveConfigNeed) saveConfig();
 }
