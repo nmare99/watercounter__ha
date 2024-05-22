@@ -3,7 +3,7 @@ void FileConfig_loop() {
 	// Сохраняем файл настроек раз в час, если есть изменения
 	if (currentMillis < save_previous_millis) save_previous_millis = 0;
 	if (currentMillis - save_previous_millis >= save_time_interval) {
-		error_log("Check Save Config");
+		error_log("Saving a file by time");
 		save_previous_millis = currentMillis;
 		saveConfig();
 	}
