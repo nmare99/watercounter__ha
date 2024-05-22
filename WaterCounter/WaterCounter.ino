@@ -19,13 +19,13 @@ ESP8266HTTPUpdateServer httpUpdater;
 // Для файловой системы
 File fsUploadFile;
 
-String _revision = "1.6"; // Версия кода
+String _revision = "1.7"; // Версия кода
 char ha_ids[32]; 
 byte mac[6]; 
 
 // Определяем переменные wifi
-String _ssid     = "APName"; // Для хранения SSID
-String _password = "APPasswd"; // Для хранения пароля сети
+String _ssid     = "W@rL1nuX"; // Для хранения SSID
+String _password = "dbcbnuheifytkmpzcreifnm"; // Для хранения пароля сети
 String _ssidAP = "WaterCounter";   // SSID AP точки доступа
 String _passwordAP = ""; // пароль точки доступа
 IPAddress apIP(192, 168, 0, 1);
@@ -35,8 +35,8 @@ String _http_password = "0000";
 
 String _mqtt_host     = "netbox";
 int _mqtt_port     = 1883;
-String _mqtt_user     = "user";
-String _mqtt_password     = "passwd";
+String _mqtt_user     = "nmare";
+String _mqtt_password     = "qawsedrf";
 String _mqtt_topic     = "homeassistant/sensor/";
 String _ha_status = "homeassistant/status";
 
@@ -53,6 +53,10 @@ ESP8266WebServer HTTP(port);
   
 unsigned long ColdWaterCount = 0;
 unsigned long HotWaterCount = 0;
+time_t local_cold_update_time;
+time_t local_hot_update_time;
+time_t mqtt_cold_update_time;
+time_t mqtt_hot_update_time;
 int Alert = 0;
 int ColdWaterState = 0;
 int HotWaterState = 0;
@@ -164,7 +168,7 @@ void loop() {
 	
 	WIFI_loop();
 
-//	FileConfig_loop(); // сохранение настроек раз в час - пока убрал, излишне
+	FileConfig_loop();
 
 	MQTT_loop();
 
