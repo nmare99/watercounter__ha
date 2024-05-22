@@ -24,8 +24,8 @@ char ha_ids[32];
 byte mac[6]; 
 
 // Определяем переменные wifi
-String _ssid     = "W@rL1nuX"; // Для хранения SSID
-String _password = "dbcbnuheifytkmpzcreifnm"; // Для хранения пароля сети
+String _ssid     = "APWifi"; // Для хранения SSID
+String _password = "pass"; // Для хранения пароля сети
 String _ssidAP = "WaterCounter";   // SSID AP точки доступа
 String _passwordAP = ""; // пароль точки доступа
 IPAddress apIP(192, 168, 0, 1);
