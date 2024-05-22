@@ -23,12 +23,11 @@ void Water_loop() {
 		
 		if (water_changes_for_send) {
 			MQTT_publish(_mqtt_topic + ESP_Name + "/cold/state", String(float(ColdWaterCount) / _Div1, 3));
+      MQTT_publish(_mqtt_topic + ESP_Name + "/cold/updated", String(local_cold_update_time));
 			MQTT_publish(_mqtt_topic + ESP_Name + "/hot/state", String(float(HotWaterCount) / _Div2, 3));
+      MQTT_publish(_mqtt_topic + ESP_Name + "/hot/updated", String(local_hot_update_time));
 			MQTT_publish(_mqtt_topic + ESP_Name + "/alert/state",(String) Alert);
 			water_changes_for_send = false;
-/*    Serial.println("if (water_changes_for_send)");
-    Serial.println(String(float(ColdWaterCount) / _Div1, 3));  
-    Serial.println(String(ColdWaterCount));*/
 		}
 	}
 	
@@ -42,7 +41,10 @@ void Water_loop() {
 			ColdWaterState = state;
 			if (ColdWaterState == LOW) {
 				++ColdWaterCount;
+       local_cold_update_time = time(nullptr);
+//       error_log("COLD Water Count now = " + String(ColdWaterCount)+ " updated:" + String(cold_update_time));
 				MQTT_publish(_mqtt_topic + ESP_Name + "/cold/state", String(float(ColdWaterCount) / _Div1, 3));
+        MQTT_publish(_mqtt_topic + ESP_Name + "/cold/updated", String(local_cold_update_time));
 /*    Serial.println("if (state != ColdWaterState)");
     Serial.println(String(float(ColdWaterCount) / _Div1, 3));      
     Serial.println(String(ColdWaterCount));*/
@@ -55,7 +57,9 @@ void Water_loop() {
 			HotWaterState = state;
 			if (HotWaterState == LOW) {
 				++HotWaterCount;
+        local_hot_update_time = time(nullptr);
 				MQTT_publish(_mqtt_topic + ESP_Name + "/hot/state", String(float(HotWaterCount) / _Div2, 3));
+        MQTT_publish(_mqtt_topic + ESP_Name + "/hot/updated", String(local_hot_update_time));
 			}
 		}
 		if (Alert < 1) digitalWrite(RED_LED_PIN, !state);
@@ -95,6 +99,7 @@ void handle_Set_WaterAlert() {
 void handle_Set_WaterCold() {
 	if(!HTTP.authenticate(_http_user.c_str(), _http_password.c_str())) return HTTP.requestAuthentication();
 	ColdWaterCount = HTTP.arg("cold").toInt();
+  local_cold_update_time = time(nullptr);
 	water_changes_for_send = true;
 	saveConfig();                         // Функция сохранения данных во Flash
 	HTTP.send(200, "text/plain", "OK");   // отправляем ответ о выполнении
@@ -103,6 +108,7 @@ void handle_Set_WaterCold() {
 void handle_Set_WaterHot() {
 	if(!HTTP.authenticate(_http_user.c_str(), _http_password.c_str())) return HTTP.requestAuthentication();
 	HotWaterCount = HTTP.arg("hot").toInt();
+  local_hot_update_time = time(nullptr);
 	water_changes_for_send = true;
 	saveConfig();                         // Функция сохранения данных во Flash
 	HTTP.send(200, "text/plain", "OK");   // отправляем ответ о выполнении
